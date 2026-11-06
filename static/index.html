@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus Saathi</title>
+<style>
+  :root{
+    --bg:#fbf8f5; --card:#ffffff; --ink:#1d1b2a; --muted:#6b6880; --line:#ece6f2;
+    --orange:#f0793a; --purple:#7b5cf0; --blue:#4a90e8; --ok:#1f9d6b; --err:#d64545;
+    --grad:linear-gradient(135deg,#f0793a 0%,#c45bb5 55%,#7b5cf0 100%);
+    --shadow:0 10px 40px rgba(123,92,240,.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#14121d; --card:#1d1a2b; --ink:#f3f1fa; --muted:#a29fb8; --line:#2c2840; --shadow:0 10px 40px rgba(0,0,0,.4); }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",sans-serif;min-height:100vh;
+    background-image:radial-gradient(900px 400px at 10% -10%,rgba(240,121,58,.14),transparent),radial-gradient(900px 500px at 100% 0%,rgba(123,92,240,.16),transparent)}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 18px 60px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:44px;height:44px;border-radius:14px;background:var(--grad);display:grid;place-items:center;color:#fff;font-weight:800;font-size:20px;box-shadow:var(--shadow)}
+  h1{font-size:22px;margin:0;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted)}
+  .badge b{color:var(--ink)}
+  .hero{text-align:center;margin:34px 0 10px}
+  .hero h2{font-size:30px;line-height:1.15;margin:0 0 8px;letter-spacing:-.02em}
+  .hero h2 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);margin:0;font-size:15px}
+  .stage{display:flex;flex-direction:column;align-items:center;margin:26px 0 8px}
+  #mic{position:relative;width:104px;height:104px;border-radius:50%;border:0;background:var(--grad);color:#fff;cursor:pointer;box-shadow:0 14px 40px rgba(196,91,181,.45);transition:transform .15s}
+  #mic:hover{transform:scale(1.04)} #mic:active{transform:scale(.97)}
+  #mic svg{width:40px;height:40px}
+  #mic.rec{background:linear-gradient(135deg,#e5484d,#c4308a)}
+  #mic.rec::after,#mic.rec::before{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid rgba(229,72,77,.5);animation:pulse 1.4s infinite}
+  #mic.rec::before{animation-delay:.7s}
+  #mic.busy{filter:grayscale(.4);cursor:progress}
+  @keyframes pulse{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.35);opacity:0}}
+  #status{margin-top:16px;min-height:22px;color:var(--muted);font-size:14px;text-align:center}
+  #status.err{color:var(--err)}
+  .steps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0 0}
+  .step{font-size:12px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);display:flex;gap:6px;align-items:center}
+  .step i{width:7px;height:7px;border-radius:50%;background:var(--line);display:inline-block}
+  .step.active{border-color:var(--purple);color:var(--ink)} .step.active i{background:var(--purple);animation:blink 1s infinite}
+  .step.done{border-color:var(--ok);color:var(--ink)} .step.done i{background:var(--ok)}
+  @keyframes blink{50%{opacity:.25}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px 22px;box-shadow:var(--shadow);margin-top:22px}
+  .label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600}
+  .you{font-size:17px}
+  .ans{font-size:19px;line-height:1.5;margin-top:2px}
+  .meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .chip{font-size:12px;padding:5px 10px;border-radius:999px;background:rgba(123,92,240,.1);color:var(--purple);font-weight:600}
+  .chip.o{background:rgba(240,121,58,.12);color:var(--orange)}
+  audio{width:100%;margin-top:14px;height:40px}
+  hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+  .try{margin-top:30px}
+  .try-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card)}
+  .seg button{border:0;background:transparent;color:var(--muted);padding:6px 12px;font-size:12px;cursor:pointer}
+  .seg button.on{background:var(--ink);color:var(--bg)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .q{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 13px;border-radius:12px;font-size:14px;cursor:pointer;text-align:left}
+  .q:hover{border-color:var(--purple)}
+  form{display:flex;gap:8px;margin-top:14px}
+  input[type=text]{flex:1;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:15px}
+  form button{padding:0 18px;border-radius:12px;border:0;background:var(--ink);color:var(--bg);font-weight:600;cursor:pointer}
+  footer{margin-top:36px;color:var(--muted);font-size:12px;text-align:center;line-height:1.7}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">CS</div>
+      <div>
+        <h1>Campus Saathi <span style="font-weight:500;color:var(--muted)">· कैंपस साथी</span></h1>
+        <div class="sub">A voice helpdesk for students, in Hindi, Hinglish and English</div>
+      </div>
+    </div>
+    <div class="badge">Powered by <b>Gnani AI</b> · Prisma + Timbre</div>
+  </header>
+
+  <section class="hero">
+    <h2>Just <span>ask</span> out loud.</h2>
+    <p>पूछिए अपनी भाषा में · Tap the mic, ask about library, fees, hostel, scholarships and more.</p>
+  </section>
+
+  <section class="stage">
+    <button id="mic" aria-label="Start or stop recording">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg>
+    </button>
+    <div id="status">Tap the mic and ask your question (up to 28 seconds)</div>
+    <div class="steps" id="steps">
+      <div class="step" data-k="stt"><i></i>Prisma · Speech to text</div>
+      <div class="step" data-k="answer"><i></i>Find the answer</div>
+      <div class="step" data-k="tts"><i></i>Timbre · Text to speech</div>
+    </div>
+  </section>
+
+  <section id="result" class="card hidden">
+    <div class="label">You asked</div>
+    <div class="you" id="rTranscript"></div>
+    <hr>
+    <div class="label">Campus Saathi says</div>
+    <div class="ans" id="rAnswer"></div>
+    <audio id="player" controls></audio>
+    <div class="meta" id="rMeta"></div>
+  </section>
+
+  <section class="try">
+    <div class="try-head">
+      <div class="label" style="margin:0">Or try a sample question</div>
+      <div class="seg" id="langSeg"><button class="on" data-l="en">English</button><button data-l="hi">हिन्दी</button></div>
+    </div>
+    <div class="chips" id="chips"></div>
+    <form id="textForm">
+      <input type="text" id="textQ" placeholder="Or type a question…" autocomplete="off">
+      <button type="submit">Ask</button>
+    </form>
+  </section>
+
+  <footer>
+    Answers come from the institute FAQ in <code>data/faq.json</code> (sample data, verify with official notices).<br>
+    Built for the Great Indian AI Internship Challenge · #GnaniAI #GreatIndianAIInternshipChallenge
+  </footer>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const mic = $('#mic'), statusEl = $('#status'), player = $('#player');
+const MAX_SECONDS = 28;
+let recorder = null, chunks = [], stream = null, timer = null, busy = false, chipLang = 'en', suggestions = [];
+
+function setStatus(msg, err=false){ statusEl.textContent = msg; statusEl.classList.toggle('err', err); }
+function setSteps(active, done=[]){
+  document.querySelectorAll('.step').forEach(el=>{
+    el.classList.toggle('active', el.dataset.k===active);
+    el.classList.toggle('done', done.includes(el.dataset.k));
+  });
+}
+
+/* ---------- recording -> 16 kHz mono WAV (Gnani accepts WAV up to 30 s) ---------- */
+function encodeWav(samples, rate){
+  const buf = new ArrayBuffer(44 + samples.length*2), v = new DataView(buf);
+  const w = (o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
+  w(0,'RIFF'); v.setUint32(4,36+samples.length*2,true); w(8,'WAVE'); w(12,'fmt ');
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,rate,true); v.setUint32(28,rate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
+  w(36,'data'); v.setUint32(40,samples.length*2,true);
+  for(let i=0;i<samples.length;i++){ const s=Math.max(-1,Math.min(1,samples[i])); v.setInt16(44+i*2, s<0?s*0x8000:s*0x7fff, true); }
+  return new Blob([buf],{type:'audio/wav'});
+}
+async function toWav16k(blob){
+  const data = await blob.arrayBuffer();
+  const ctx = new (window.AudioContext||window.webkitAudioContext)();
+  const audio = await ctx.decodeAudioData(data); ctx.close();
+  const rate = 16000;
+  const off = new OfflineAudioContext(1, Math.max(1,Math.ceil(audio.duration*rate)), rate);
+  const src = off.createBufferSource(); src.buffer = audio; src.connect(off.destination); src.start();
+  const rendered = await off.startRendering();
+  return encodeWav(rendered.getChannelData(0), rate);
+}
+
+async function startRecording(){
+  try { stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}); }
+  catch(e){ setStatus('Microphone blocked. Allow mic access, or type a question below.', true); return; }
+  chunks = []; recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = e => e.data.size && chunks.push(e.data);
+  recorder.onstop = onRecorded;
+  recorder.start(); mic.classList.add('rec');
+  let left = MAX_SECONDS; setStatus(`Listening… tap again to stop (${left}s)`);
+  timer = setInterval(()=>{ left--; setStatus(`Listening… tap again to stop (${left}s)`); if(left<=0) stopRecording(); },1000);
+}
+function stopRecording(){
+  clearInterval(timer); mic.classList.remove('rec');
+  if(recorder && recorder.state!=='inactive') recorder.stop();
+  if(stream) stream.getTracks().forEach(t=>t.stop());
+}
+async function onRecorded(){
+  try{
+    setBusy(true); setStatus('Preparing audio…');
+    const wav = await toWav16k(new Blob(chunks,{type:recorder.mimeType||'audio/webm'}));
+    const fd = new FormData(); fd.append('audio', wav, 'question.wav');
+    await send(()=>fetch('/api/ask',{method:'POST',body:fd}), true);
+  }catch(e){ setStatus('Could not process the recording: '+e.message, true); setBusy(false); }
+}
+
+/* ---------- API calls ---------- */
+function setBusy(b){ busy=b; mic.classList.toggle('busy',b); }
+async function send(makeRequest, voice){
+  setBusy(true); $('#result').classList.add('hidden');
+  const t1 = voice? setTimeout(()=>{setSteps('stt');setStatus('Prisma is listening…')},0) : null;
+  if(!voice){ setSteps('answer',['stt']); setStatus('Finding the answer…'); }
+  const t2 = setTimeout(()=>{ setSteps('answer',['stt']); setStatus('Finding the answer…'); }, voice?1800:99999);
+  const t3 = setTimeout(()=>{ setSteps('tts',['stt','answer']); setStatus('Timbre is preparing the voice reply…'); }, voice?2600:700);
+  try{
+    const r = await makeRequest();
+    const body = await r.json().catch(()=>({}));
+    clearTimeout(t1);clearTimeout(t2);clearTimeout(t3);
+    if(!r.ok){ throw new Error(body.detail || ('Server error '+r.status)); }
+    if(!body.ok){ setSteps(null); setStatus(body.message||'Something went wrong', true); return; }
+    showResult(body);
+  }catch(e){ clearTimeout(t2);clearTimeout(t3); setSteps(null); setStatus(e.message, true); }
+  finally{ setBusy(false); }
+}
+function showResult(b){
+  $('#rTranscript').textContent = b.transcript;
+  $('#rAnswer').textContent = b.answer;
+  const meta = $('#rMeta'); meta.innerHTML='';
+  const add=(t,c='')=>{const s=document.createElement('span');s.className='chip '+c;s.textContent=t;meta.appendChild(s)};
+  if(b.topic) add('Topic: '+b.topic);
+  if(b.timings.stt_ms) add('Prisma '+b.timings.stt_ms+' ms','o');
+  add('Answer '+b.timings.answer_ms+' ms','o');
+  if(b.audio_b64) add('Timbre '+b.timings.tts_ms+' ms','o');
+  add(b.models.reasoning);
+  $('#result').classList.remove('hidden');
+  setSteps(null,['answer'].concat(b.timings.stt_ms?['stt']:[], b.audio_b64?['tts']:[]));
+  if(b.audio_b64){
+    player.classList.remove('hidden');
+    player.src = 'data:'+b.audio_mime+';base64,'+b.audio_b64;
+    player.play().catch(()=>{});
+    setStatus('Done. Tap the mic to ask another question.');
+  } else {
+    player.classList.add('hidden');
+    setStatus('Answer ready (voice unavailable: '+(b.tts_error||'unknown')+')', true);
+  }
+}
+const askText = (text)=>send(()=>fetch('/api/ask-text',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})}), false);
+
+/* ---------- UI wiring ---------- */
+mic.addEventListener('click', ()=>{
+  if(busy) return;
+  (recorder && recorder.state==='recording') ? stopRecording() : startRecording();
+});
+$('#textForm').addEventListener('submit', e=>{ e.preventDefault(); const q=$('#textQ').value.trim(); if(q&&!busy) askText(q); });
+document.querySelectorAll('#langSeg button').forEach(b=>b.addEventListener('click',()=>{
+  chipLang=b.dataset.l; document.querySelectorAll('#langSeg button').forEach(x=>x.classList.toggle('on',x===b)); renderChips();
+}));
+function renderChips(){
+  const box=$('#chips'); box.innerHTML='';
+  suggestions.slice(0,8).forEach(s=>{
+    const q = chipLang==='hi'? s.q_hi : s.q_en;
+    const el=document.createElement('button'); el.className='q'; el.textContent=q;
+    el.onclick=()=>{ if(!busy){ $('#textQ').value=q; askText(q);} };
+    box.appendChild(el);
+  });
+}
+fetch('/api/faq').then(r=>r.json()).then(d=>{suggestions=d.suggestions;renderChips();}).catch(()=>{});
+fetch('/api/health').then(r=>r.json()).then(h=>{ if(!h.gnani_key_set) setStatus('Server is running but GNANI_API_KEY is not set. See README.', true); }).catch(()=>{});
+</script>
+</body>
+</html>
